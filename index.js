@@ -57,8 +57,6 @@ async function run() {
     app.put("/freelance/:id", async (req, res) => {
       const { id } = req.params;
       const data = req.body;
-      // console.log(id)
-      // console.log(data)
       const objectId = new ObjectId(id);
       const filter = { _id: objectId };
       const update = {
@@ -72,6 +70,19 @@ async function run() {
         result,
       });
     });
+
+
+    app.delete('/freelance/:id', async(req, res) =>{
+      const {id} = req.params
+      // const objectId = new ObjectId(id);
+      // const filter = { _id: objectId };
+
+      const result = await freelanceCollection.deleteOne({_id: new ObjectId(id)})
+      res.send({
+        success:true,
+        result
+      })
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
