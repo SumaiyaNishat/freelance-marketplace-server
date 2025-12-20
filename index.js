@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require("mongodb");
+require("dotenv").config();
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
   res.send("server is running fine");
 });
 
-const uri =`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vodyl0g.mongodb.net/?appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vodyl0g.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -35,17 +35,43 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/freelance", async (req, res) =>{
-      const data = req.body
-      console.log(data)
-      const result = await freelanceCollection.insertOne(data)
-      res.send(
-        {
-          success: true,
-          result
-        }
-      )
-    })
+    app.get("/freelance/:id", async (req, res) => {
+      const { id } = req.params;
+      console.log(id);
+      const objectId = new ObjectId(id);
+
+      const result = await freelanceCollection.findOne({ _id: objectId });
+      res.send(result);
+    });
+
+    app.post("/freelance", async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await freelanceCollection.insertOne(data);
+      res.send({
+        success: true,
+        result,
+      });
+    });
+
+    app.put("/freelance/:id", async (req, res) => {
+      const { id } = req.params;
+      const data = req.body;
+      // console.log(id)
+      // console.log(data)
+      const objectId = new ObjectId(id);
+      const filter = { _id: objectId };
+      const update = {
+        $set: data,
+      };
+
+      const result = await freelanceCollection.updateOne(filter, update);
+
+      res.send({
+        success: true,
+        result,
+      });
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
