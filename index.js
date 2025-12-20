@@ -29,6 +29,7 @@ async function run() {
 
     const db = client.db("freelance_db");
     const freelanceCollection = db.collection("freelance");
+    const taskCollection = db.collection("tasks");
 
     app.get("/freelance", async (req, res) => {
       const result = await freelanceCollection.find().toArray();
@@ -45,7 +46,21 @@ async function run() {
     });
 
     app.get("/latest-freelance", async (req, res) => {
-      const result = await freelanceCollection.find().sort({postedAt: "desc",}).limit(6).toArray();
+      const result = await freelanceCollection
+        .find()
+        .sort({ postedAt: "desc" })
+        .limit(6)
+        .toArray();
+      res.send(result);
+    });
+
+    app.get("/my-job", async (req, res) => {
+      const email = req.query.email;
+      const result = await freelanceCollection
+        .find({
+          userEmail: email,
+        })
+        .toArray();
       res.send(result);
     });
 
@@ -58,6 +73,12 @@ async function run() {
         result,
       });
     });
+
+    app.post("/tasks", async(req, res) =>{
+      const data = req.body
+      const result = await taskCollection.insertOne(data)
+      res.send(result)
+    })
 
     app.put("/freelance/:id", async (req, res) => {
       const { id } = req.params;
