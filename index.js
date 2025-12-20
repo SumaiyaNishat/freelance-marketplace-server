@@ -44,6 +44,11 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/latest-freelance", async (req, res) => {
+      const result = await freelanceCollection.find().sort({postedAt: "desc",}).limit(6).toArray();
+      res.send(result);
+    });
+
     app.post("/freelance", async (req, res) => {
       const data = req.body;
       console.log(data);
@@ -71,18 +76,19 @@ async function run() {
       });
     });
 
-
-    app.delete('/freelance/:id', async(req, res) =>{
-      const {id} = req.params
+    app.delete("/freelance/:id", async (req, res) => {
+      const { id } = req.params;
       // const objectId = new ObjectId(id);
       // const filter = { _id: objectId };
 
-      const result = await freelanceCollection.deleteOne({_id: new ObjectId(id)})
+      const result = await freelanceCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
       res.send({
-        success:true,
-        result
-      })
-    })
+        success: true,
+        result,
+      });
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
