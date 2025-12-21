@@ -109,8 +109,6 @@ async function run() {
 
     app.delete("/freelance/:id", async (req, res) => {
       const { id } = req.params;
-      // const objectId = new ObjectId(id);
-      // const filter = { _id: objectId };
 
       const result = await freelanceCollection.deleteOne({
         _id: new ObjectId(id),
