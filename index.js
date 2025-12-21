@@ -74,6 +74,16 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/tasks", async (req, res) => {
+  const workerEmail = req.query.workerEmail;
+  if (!workerEmail) {
+    return res.status(400).send({ message: "workerEmail query is required" });
+  }
+  const tasks = await taskCollection.find({ workerEmail }).toArray();
+  res.send(tasks);
+});
+
+
     app.post("/freelance", async (req, res) => {
       const data = req.body;
       console.log(data);
