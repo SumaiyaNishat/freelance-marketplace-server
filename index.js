@@ -64,6 +64,16 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/my-tasks", async (req, res) => {
+      const email = req.query.email;
+      const result = await taskCollection
+        .find({
+          added_By: email,
+        })
+        .toArray();
+      res.send(result);
+    });
+
     app.post("/freelance", async (req, res) => {
       const data = req.body;
       console.log(data);
@@ -74,11 +84,11 @@ async function run() {
       });
     });
 
-    app.post("/tasks", async(req, res) =>{
-      const data = req.body
-      const result = await taskCollection.insertOne(data)
-      res.send(result)
-    })
+    app.post("/tasks", async (req, res) => {
+      const data = req.body;
+      const result = await taskCollection.insertOne(data);
+      res.send(result);
+    });
 
     app.put("/freelance/:id", async (req, res) => {
       const { id } = req.params;
@@ -110,6 +120,13 @@ async function run() {
         result,
       });
     });
+
+    app.delete("/my-tasks/:id", async (req, res) => {
+    const { id } = req.params;
+    const result = await taskCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send({ success: true, result });
+  
+})
 
     await client.db("admin").command({ ping: 1 });
     console.log(
